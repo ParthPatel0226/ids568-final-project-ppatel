@@ -1,0 +1,178 @@
+{
+  "dashboard": {
+    "title": "IrisClassifier v1.0 - Production Monitoring",
+    "tags": ["mlops", "iris", "production"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate (req/sec)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [{
+          "expr": "rate(iris_requests_total[1m])",
+          "legendFormat": "req/sec"
+        }],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Error Rate (%)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [{
+          "expr": "rate(iris_errors_total[1m]) / rate(iris_requests_total[1m]) * 100",
+          "legendFormat": "error %"
+        }],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area"
+        }
+      },
+      {
+        "id": 3,
+        "title": "P99 Latency (seconds)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [{
+          "expr": "histogram_quantile(0.99, rate(iris_request_latency_seconds_bucket[1m]))",
+          "legendFormat": "p99"
+        }],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Active Requests",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [{
+          "expr": "iris_active_requests",
+          "legendFormat": "active"
+        }],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Request Latency Over Time",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(iris_request_latency_seconds_bucket[1m]))",
+            "legendFormat": "p50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(iris_request_latency_seconds_bucket[1m]))",
+            "legendFormat": "p95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(iris_request_latency_seconds_bucket[1m]))",
+            "legendFormat": "p99"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Predictions by Class",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [
+          {
+            "expr": "rate(iris_predictions_total{predicted_class='setosa'}[1m])",
+            "legendFormat": "Setosa"
+          },
+          {
+            "expr": "rate(iris_predictions_total{predicted_class='versicolor'}[1m])",
+            "legendFormat": "Versicolor"
+          },
+          {
+            "expr": "rate(iris_predictions_total{predicted_class='virginica'}[1m])",
+            "legendFormat": "Virginica"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Input Feature Drift Signals",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "iris_drift_signal{feature_name='petal_length'}",
+            "legendFormat": "petal_length drift"
+          },
+          {
+            "expr": "iris_drift_signal{feature_name='petal_width'}",
+            "legendFormat": "petal_width drift"
+          },
+          {
+            "expr": "iris_drift_signal{feature_name='sepal_length'}",
+            "legendFormat": "sepal_length drift"
+          },
+          {
+            "expr": "iris_drift_signal{feature_name='sepal_width'}",
+            "legendFormat": "sepal_width drift"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Error Count Over Time",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+        "targets": [{
+          "expr": "rate(iris_errors_total[1m])",
+          "legendFormat": "{{error_type}}"
+        }]
+      },
+      {
+        "id": 9,
+        "title": "Total Requests by Status",
+        "type": "piechart",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "targets": [{
+          "expr": "iris_requests_total",
+          "legendFormat": "{{status}}"
+        }]
+      },
+      {
+        "id": 10,
+        "title": "Latest Feature Values",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+        "targets": [
+          {
+            "expr": "iris_input_feature_value{feature_name='petal_length'}",
+            "legendFormat": "petal_length"
+          },
+          {
+            "expr": "iris_input_feature_value{feature_name='petal_width'}",
+            "legendFormat": "petal_width"
+          },
+          {
+            "expr": "iris_input_feature_value{feature_name='sepal_length'}",
+            "legendFormat": "sepal_length"
+          },
+          {
+            "expr": "iris_input_feature_value{feature_name='sepal_width'}",
+            "legendFormat": "sepal_width"
+          }
+        ]
+      }
+    ],
+    "refresh": "5s",
+    "time": {"from": "now-15m", "to": "now"},
+    "schemaVersion": 38
+  },
+  "overwrite": true,
+  "folderId": 0
+}
