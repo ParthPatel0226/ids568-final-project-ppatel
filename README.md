@@ -1,516 +1,278 @@
-# ids568-final-project-ppatel
+# IDS 568 MLOps — Final Project
+### Production Monitoring, Governance & Evaluation Framework
 
+**Author:** Parth Patel | **NetID:** ppatel | **Course:** IDS 568 MLOps — Module 8  
+**University:** University of Illinois Chicago | **Date:** April 2026
 
+---
 
-\# IDS 568 MLOps — Final Project
+## Overview
 
-\*\*Author:\*\* Parth Patel | NetID: ppatel
+This capstone project implements a **complete production operations framework** for `IrisClassifier v1.0` — a RandomForest-based Iris species classifier built across all prior course milestones. The system demonstrates end-to-end MLOps practices including live monitoring, statistical experimentation, governance documentation, drift detection, and AI risk assessment.
 
-\*\*Course:\*\* IDS 568 - MLOps | Module 8
+> **Base System:** RandomForest classifier (n=100, depth=5) trained on UCI Iris dataset, served via FastAPI on GCP Cloud Run — built on Milestone 1 (model serving) and Milestone 3 (MLflow experiment tracking).
 
-\*\*Date:\*\* April 2026
+---
 
-\*\*Repository:\*\* ids568-final-project-ppatel
+## Project Components
 
+| # | Component | Description | Key Files |
+|---|-----------|-------------|-----------|
+| C1 | **Production Monitoring Dashboard** | Prometheus + Grafana instrumentation with 10 live panels | `src/monitoring/instrumentation.py` |
+| C2 | **A/B Test Design & Simulation** | 1000-trial bootstrap experiment comparing model variants | `src/ab_test/simulation.py` |
+| C3 | **Model Card & Governance Packet** | Full lineage, risk register, audit trail | `docs/model-card.md` |
+| C4 | **Data Integrity & Drift Detection** | PSI + KS tests across 4 features with visualizations | `src/drift/drift_detection.py` |
+| C5 | **AI Risk Assessment** | NIST AI RMF-aligned governance review, 14 risks scored | `docs/governance-review.md` |
 
+---
 
-\---
+## Repository Structure
 
-
-
-\## System Overview
-
-
-
-This project implements a complete production operations framework
-
-for IrisClassifier v1.0 — a RandomForest-based Iris species
-
-classifier built across all prior milestones. The system
-
-demonstrates end-to-end MLOps practices including monitoring,
-
-experimentation, governance, drift detection, and risk assessment.
-
-
-
-\*\*Base System:\*\* RandomForest classifier (n=100, depth=5)
-
-trained on UCI Iris dataset, served via FastAPI on GCP Cloud Run.
-
-Built on Milestone 1 (serving) and Milestone 3 (MLflow tracking).
-
-
-
-\---
-
-
-
-\## Project Structure
-
+```
 ids568-final-project-ppatel/
-
 ├── src/
-
 │   ├── monitoring/
-
-│   │   └── instrumentation.py    # C1: FastAPI + Prometheus metrics
-
-│   ├── ab\_test/
-
-│   │   └── simulation.py         # C2: A/B test simulation
-
+│   │   └── instrumentation.py        # C1: FastAPI + Prometheus metrics (7 metric types)
+│   ├── ab_test/
+│   │   └── simulation.py             # C2: 1000-trial bootstrap A/B simulation
 │   └── drift/
-
-│       └── drift\_detection.py    # C4: Drift detection scripts
-
+│       └── drift_detection.py        # C4: PSI + KS + outlier detection
+│
 ├── docs/
-
-│   ├── dashboard-interpretation.md  # C1: Dashboard analysis
-
-│   ├── experiment-specification.md  # C2: Experiment design
-
-│   ├── recommendation-memo.md       # C2: Decision memo
-
-│   ├── model-card.md                # C3: Model card
-
-│   ├── risk-register.md             # C3: Risk register
-
-│   ├── lineage-diagram.md           # C3: Lineage diagram
-
-│   ├── audit-trail.md               # C3: Audit trail (human)
-
-│   ├── drift-diagnostic-report.md   # C4: Drift report
-
-│   ├── governance-review.md         # C5: Governance review
-
-│   ├── risk-matrix.md               # C5: Risk matrix
-
-│   └── cto-memo.md                  # C5: CTO memo
-
+│   ├── dashboard-interpretation.md   # C1: 10-panel dashboard analysis
+│   ├── experiment-specification.md   # C2: Hypothesis, power analysis, decision rules
+│   ├── recommendation-memo.md        # C2: Ship A / Ship B decision memo
+│   ├── model-card.md                 # C3: Performance, limitations, ethical risks
+│   ├── risk-register.md              # C3: 13 risks across 4 categories
+│   ├── lineage-diagram.md            # C3: Data → training → deployment flow
+│   ├── lineage-diagram.png           # C3: Visual lineage diagram
+│   ├── audit-trail.md                # C3: Human-readable event log
+│   ├── drift-diagnostic-report.md    # C4: PSI scores + business impact analysis
+│   ├── governance-review.md          # C5: NIST AI RMF structured review
+│   ├── risk-matrix.md                # C5: Likelihood × severity matrix (14 risks)
+│   ├── system-boundary-diagram.png   # C5: Full pipeline boundary diagram
+│   └── cto-memo.md                   # C5: Executive summary for leadership
+│
 ├── dashboards/
-
-│   └── grafana-export.json       # C1: Grafana dashboard config
-
+│   └── grafana-export.json           # C1: Grafana dashboard config (importable)
+│
 ├── logs/
-
-│   └── audit-trail.json          # C3: Audit trail (machine)
-
+│   └── audit-trail.json              # C3: Machine-readable audit trail (EVT-001 to EVT-007)
+│
 ├── visualizations/
+│   ├── drift_distributions.png       # C4: Reference vs production feature histograms
+│   ├── psi_summary.png               # C4: PSI bar chart with threshold lines
+│   ├── drift_over_time.png           # C4: PSI across 8 time windows
+│   ├── label_distribution.png        # C4: Class label comparison
+│   ├── ab_test_distributions.png     # C2: Model A vs B metric distributions
+│   ├── ab_test_ci.png                # C2: 95% confidence intervals
+│   ├── dashboard-screenshot-1.png    # C1: Live Grafana dashboard (top panels)
+│   ├── dashboard-screenshot-2.png    # C1: Live Grafana dashboard (middle panels)
+│   └── dashboard-screenshot-3.png    # C1: Live Grafana dashboard (bottom panels)
+│
+├── generate_traffic.py               # Synthetic traffic generator (200 requests)
+├── create_diagrams.py                # Generates lineage + system boundary PNGs
+├── prometheus.yml                    # Prometheus scrape config (5s interval)
+├── docker-compose.yml                # Monitoring stack (Prometheus + Grafana)
+├── requirements.txt                  # Pinned Python dependencies
+└── README.md                         # This file
+```
 
-│   ├── drift\_distributions.png   # C4: Feature distributions
+---
 
-│   ├── psi\_summary.png           # C4: PSI scores
+## Quick Start — Reproduce All Results
 
-│   ├── drift\_over\_time.png       # C4: Drift over time windows
+### Prerequisites
+- Python 3.10+
+- Docker Desktop
+- Git
 
-│   ├── label\_distribution.png    # C4: Label distributions
-
-│   ├── ab\_test\_distributions.png # C2: A/B distributions
-
-│   ├── ab\_test\_ci.png            # C2: Confidence intervals
-
-│   └── dashboard-screenshot.png  # C1: Live dashboard
-
-├── generate\_traffic.py           # Traffic simulator
-
-├── prometheus.yml                # Prometheus config
-
-├── docker-compose.yml            # Monitoring stack
-
-├── requirements.txt              # Pinned dependencies
-
-└── README.md                     # This file
-
-
-
-\---
-
-
-
-\## Setup \& Reproduction
-
-
-
-\### Prerequisites
-
-\- Python 3.10+
-
-\- Docker Desktop
-
-\- Git
-
-
-
-\### 1. Clone Repository
-
+### 1. Clone & Install
 ```bash
-
 git clone https://github.com/ParthPatel0226/ids568-final-project-ppatel.git
-
 cd ids568-final-project-ppatel
-
-```
-
-
-
-\### 2. Install Dependencies
-
-```bash
-
 pip install -r requirements.txt
-
 ```
 
-
-
-\### 3. Run Component 4 — Drift Detection
-
+### 2. Run Drift Detection (Component 4)
 ```bash
-
-python src/drift/drift\_detection.py
-
+python src/drift/drift_detection.py
+# Outputs 4 PNGs to visualizations/
+# Takes ~10 seconds
 ```
 
-Outputs 4 visualizations to `visualizations/`
-
-
-
-\### 4. Run Component 2 — A/B Test Simulation
-
+### 3. Run A/B Test Simulation (Component 2)
 ```bash
-
-python src/ab\_test/simulation.py
-
+python src/ab_test/simulation.py
+# Outputs 2 PNGs to visualizations/
+# Takes ~2 minutes (1000 bootstrap trials)
 ```
 
-Outputs 2 visualizations to `visualizations/`
+### 4. Run Monitoring Dashboard (Component 1)
 
-Takes \~2 minutes (1000 bootstrap trials)
-
-
-
-\### 5. Run Component 1 — Monitoring Dashboard
-
-\*\*Terminal 1 — Start API:\*\*
-
+**Terminal 1 — Start the instrumented API:**
 ```bash
-
 python src/monitoring/instrumentation.py
-
+# FastAPI running at http://localhost:8000
 ```
 
-
-
-\*\*Terminal 2 — Start Prometheus + Grafana:\*\*
-
+**Terminal 2 — Start Prometheus + Grafana:**
 ```bash
-
 docker-compose up -d
-
+# Prometheus: http://localhost:9090
+# Grafana:    http://localhost:3000  (admin/admin)
 ```
 
-
-
-\*\*Terminal 3 — Generate traffic:\*\*
-
+**Terminal 3 — Generate synthetic traffic:**
 ```bash
-
-python generate\_traffic.py
-
+python generate_traffic.py
+# Sends 200 requests with realistic patterns
 ```
 
-
-
-\*\*Import dashboard:\*\*
-
+**Import the dashboard:**
 ```bash
-
-curl -X POST http://admin:admin@localhost:3000/api/dashboards/import \\
-
-&#x20; -H "Content-Type: application/json" \\
-
-&#x20; -d @dashboards/grafana-export.json
-
+curl -X POST http://admin:admin@localhost:3000/api/dashboards/import \
+  -H "Content-Type: application/json" \
+  -d @dashboards/grafana-export.json
 ```
 
+**View live dashboard:**
+```
+http://localhost:3000/d/6a4ec3a7-e351-47d4-82f2-7cae950b1017/irisclassifier-v1-0-production-monitoring
+```
 
+---
 
-\*\*View dashboard:\*\*
+## Component Results
 
-http://localhost:3000
+### C1: Production Monitoring Dashboard
 
+Instrumented FastAPI service with **7 Prometheus metric types** — counters, histograms, and gauges — covering all required signal categories.
 
+| Metric | Observed Value | Threshold | Status |
+|--------|---------------|-----------|--------|
+| Request Rate | 0.172 req/sec | > 0 | OK |
+| P99 Latency | ~1ms | < 200ms | OK |
+| Error Rate | ~2% (simulated) | < 1% | WARNING |
+| petal_length drift | 2.5 (deviation) | < 2.0 | WARNING |
+| Active Requests | 0 (between bursts) | < 10 | OK |
 
-\---
+**Stack:** Prometheus (pull-based, 5s scrape) + Grafana (10 panels, 5s refresh)  
+See: [`docs/dashboard-interpretation.md`](docs/dashboard-interpretation.md)
 
+---
 
+### C2: A/B Test Design & Simulation
 
-\## Component Summary
+Compared **Model A** (n=100, depth=5, production) vs **Model B** (n=200, depth=7, candidate) across 1000 bootstrap trials.
 
+| Metric | Model A | Model B | Difference | Significant? |
+|--------|---------|---------|------------|-------------|
+| Accuracy | 0.9537 | 0.9529 | -0.0008 | NO (p=1.0) |
+| F1 Score | 0.9537 | 0.9529 | -0.0008 | NO (p=1.0) |
+| Latency | 74ms | 146ms | +72ms (1.97x) | YES — GUARDRAIL FAIL |
 
+**Decision: KEEP MODEL A** — Model B failed the latency guardrail (1.97x > 1.5x threshold) with zero accuracy benefit.
 
-\### C1: Production Monitoring Dashboard
+See: [`docs/recommendation-memo.md`](docs/recommendation-memo.md)
 
-\*\*Score Target: 5/5\*\*
+---
 
+### C3: Model Card & Governance Packet
 
+| Artifact | Description |
+|----------|-------------|
+| Model Card | Performance (96.7%), training data, limitations, ethical risks, intended use |
+| Lineage Diagram | Full pipeline: data → preprocess → train → MLflow → registry → deploy → monitor |
+| Risk Register | 13 risks across bias, robustness, privacy, compliance categories |
+| Audit Trail | 7 lifecycle events (EVT-001 to EVT-007) with timestamps and approvals |
 
-Instrumented FastAPI service with 7 Prometheus metric types
+See: [`docs/model-card.md`](docs/model-card.md) | [`logs/audit-trail.json`](logs/audit-trail.json)
 
-(counters, histograms, gauges) covering latency, throughput,
+---
 
-error rate, prediction distribution, and feature drift signals.
+### C4: Data Integrity & Drift Detection
 
-Grafana dashboard with 10 panels running on Docker stack.
+PSI and KS tests comparing reference (UCI Iris training) vs simulated production distribution.
 
+| Feature | PSI Score | KS p-value | Status |
+|---------|-----------|-----------|--------|
+| petal_width | **2.1935** | 0.0009 | CRITICAL |
+| petal_length | **1.7533** | 0.0000 | CRITICAL |
+| sepal_length | 0.4360 | 0.1804 | CRITICAL |
+| sepal_width | 0.0856 | 0.2308 | OK |
 
+**Recommendation:** Immediate retraining required. Petal features have shifted beyond decision boundaries.
 
-Key findings from dashboard:
+See: [`docs/drift-diagnostic-report.md`](docs/drift-diagnostic-report.md)
 
-\- Request rate: 0.172 req/sec (simulated traffic)
+---
 
-\- P99 latency: \~1ms (well within 200ms SLA)
+### C5: AI Risk Assessment
 
-\- Error rate: \~2% (simulated validation errors)
+NIST AI RMF-aligned governance review covering data security, compliance, hallucination analogues, and tool-misuse pathways.
 
-\- petal\_length drift signal highest (consistent with C4)
+| Level | Count | Top Risk |
+|-------|-------|---------|
+| Critical | 1 | R01: Feature drift (ACTIVE) |
+| High | 1 | R02: Latency guardrail (MITIGATED by C2) |
+| Medium | 10 | R03-R12 (5 open, 5 mitigated) |
+| Low | 2 | R13-R14 (mitigated) |
 
+See: [`docs/cto-memo.md`](docs/cto-memo.md) | [`docs/risk-matrix.md`](docs/risk-matrix.md)
 
+---
 
-See: `docs/dashboard-interpretation.md`
+## Component Cross-References
 
+The components tell one coherent story — each informs the others:
 
+| Component | References |
+|-----------|-----------|
+| C1 Monitoring alerts | Uses drift thresholds from C4 (PSI > 0.2) |
+| C2 A/B latency finding | Validates why p99 monitoring (C1) matters |
+| C3 Model card limits | Maps directly to risks identified in C5 |
+| C4 Drift trigger | Documented as EVT-006 in C3 audit trail |
+| C5 Risk mitigations | Reference monitoring capabilities from C1 |
 
-\---
+---
 
+## Lessons Learned
 
+1. **Monitoring requires interpretation** — raw metrics without diagnostic reasoning lose points and miss the point. The interpretation document was as important as the instrumentation code.
 
-\### C2: A/B Test Design \& Simulation
+2. **A/B tests need guardrail metrics** — Model B's latency was 1.97x higher with zero accuracy benefit. Without the guardrail, this candidate would have degraded production based on naive hyperparameter assumptions.
 
-\*\*Score Target: 5/5\*\*
+3. **Drift detection connects everything** — the PSI findings in C4 appeared in the C1 dashboard drift signals, drove EVT-006 in the C3 audit trail, and produced the only Critical risk in C5. All components are part of one system story.
 
+4. **Governance is operational, not just documentation** — the model card, audit trail, and risk register change with every deployment decision. They are accountability tools, not checkbox exercises.
 
+5. **Start monitoring before you need it** — having a dashboard baseline before drift occurs means you have reference data for comparison when anomalies appear.
 
-Designed and simulated a statistically rigorous A/B experiment
+---
 
-comparing Model A (n=100, depth=5) vs Model B (n=200, depth=7)
-
-across 1000 bootstrap trials.
-
-
-
-Key results:
-
-\- Model B showed NO accuracy improvement (diff=-0.0008, p=1.0)
-
-\- Model B latency 1.97x higher (146ms vs 74ms)
-
-\- Latency guardrail FAILED — Model A retained in production
-
-
-
-\*\*Decision: KEEP MODEL A\*\*
-
-
-
-See: `docs/experiment-specification.md`,
-
-&#x20;    `docs/recommendation-memo.md`
-
-
-
-\---
-
-
-
-\### C3: Model Card \& Governance Packet
-
-\*\*Score Target: 5/5\*\*
-
-
-
-Complete governance packet for IrisClassifier v1.0 including:
-
-\- Model card with performance metrics, limitations, ethical risks
-
-\- Full lineage diagram (data → training → registry → deployment)
-
-\- Risk register with 13 risks across 4 categories
-
-\- Structured audit trail with 7 lifecycle events (EVT-001 to EVT-007)
-
-
-
-See: `docs/model-card.md`, `docs/risk-register.md`,
-
-&#x20;    `docs/lineage-diagram.md`, `logs/audit-trail.json`
-
-
-
-\---
-
-
-
-\### C4: Data Integrity \& Drift Detection
-
-\*\*Score Target: 5/5\*\*
-
-
-
-Implemented PSI + KS drift detection comparing reference
-
-(training) vs simulated production distributions.
-
-
-
-Key findings:
-
-\- petal\_width: PSI=2.1935 (CRITICAL)
-
-\- petal\_length: PSI=1.7533 (CRITICAL)
-
-\- sepal\_length: PSI=0.4360 (CRITICAL)
-
-\- sepal\_width: PSI=0.0856 (OK)
-
-
-
-\*\*Recommendation: Immediate retraining required\*\*
-
-
-
-See: `docs/drift-diagnostic-report.md`, `visualizations/`
-
-
-
-\---
-
-
-
-\### C5: AI Risk Assessment \& Reflective Summary
-
-\*\*Score Target: 5/5\*\*
-
-
-
-System-level governance review using NIST AI RMF framework.
-
-14 risks identified and scored across 5 categories.
-
-
-
-Key findings:
-
-\- 1 Critical risk (R01: data drift — active)
-
-\- 1 High risk (R02: latency — mitigated by A/B guardrail)
-
-\- 10 Medium risks (5 open, 5 mitigated)
-
-\- 2 Low risks (mitigated)
-
-
-
-See: `docs/governance-review.md`, `docs/risk-matrix.md`,
-
-&#x20;    `docs/cto-memo.md`
-
-
-
-\---
-
-
-
-\## Component Cross-References
-
-
-
-| If you have... | It references... |
-
-|----------------|-----------------|
-
-| Monitoring alerts (C1) | Drift thresholds from C4 (PSI>0.2) |
-
-| A/B test latency (C2) | Validates p99 monitoring in C1 |
-
-| Model card limits (C3) | Risks identified in C5 |
-
-| Drift triggers (C4) | Retraining in audit trail (C3 EVT-006) |
-
-| Risk mitigations (C5) | Monitoring capabilities in C1 |
-
-
-
-\---
-
-
-
-\## Lessons Learned
-
-
-
-1\. \*\*Monitoring requires interpretation\*\* — raw metrics without
-
-&#x20;  context are meaningless. The dashboard interpretation doc
-
-&#x20;  (C1) was as important as the instrumentation code itself.
-
-
-
-2\. \*\*A/B tests need guardrail metrics\*\* — Model B's accuracy
-
-&#x20;  improvement was negligible but its latency increase was
-
-&#x20;  critical. Without the guardrail, a degraded model could
-
-&#x20;  have been shipped based on naive hyperparameter assumptions.
-
-
-
-3\. \*\*Drift detection connects everything\*\* — the PSI findings
-
-&#x20;  in C4 showed up in the C1 dashboard drift signals, were
-
-&#x20;  referenced in the C3 audit trail, and drove the highest
-
-&#x20;  risk rating in C5. All components tell one coherent story.
-
-
-
-4\. \*\*Governance is operational, not just documentation\*\* —
-
-&#x20;  the model card, audit trail, and risk register are living
-
-&#x20;  documents that change with every deployment decision.
-
-&#x20;  They are not checkbox exercises but accountability tools.
-
-
-
-5\. \*\*Start monitoring before you need it\*\* — setting up
-
-&#x20;  Prometheus/Grafana before drift occurs means you have
-
-&#x20;  baseline data to compare against when anomalies appear.
-
-
-
-\---
-
-
-
-\## Prior Milestone Repositories
-
-
+## Prior Milestone Repositories
 
 | Milestone | Repository | Focus |
-
 |-----------|-----------|-------|
+| M0 | [Parth_Ids568-ML-Ops](https://github.com/ParthPatel0226/Parth_Ids568-ML-Ops) | Reproducible environments, CI/CD |
+| M1 | [mlops-milestone1-model-serving](https://github.com/ParthPatel0226/mlops-milestone1-model-serving) | FastAPI + Cloud Run + Cloud Function |
+| M3 | [ids568-milestone3-ppatel](https://github.com/ParthPatel0226/ids568-milestone3-ppatel) | Airflow + MLflow + quality gate |
+| M4 | [ids568-milestone4-ppatel](https://github.com/ParthPatel0226/ids568-milestone4-ppatel) | PySpark distributed processing |
 
-| M1 | \[mlops-milestone1-model-serving](https://github.com/ParthPatel0226/mlops-milestone1-model-serving) | FastAPI + Cloud Run |
+---
 
-| M3 | \[ids568-milestone3-ppatel](https://github.com/ParthPatel0226/ids568-milestone3-ppatel) | Airflow + MLflow |
+## Tech Stack
 
-| M4 | \[ids568-milestone4-ppatel](https://github.com/ParthPatel0226/ids568-milestone4-ppatel) | Distributed processing |
+![Python](https://img.shields.io/badge/Python-3.14-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green?logo=fastapi)
+![Prometheus](https://img.shields.io/badge/Prometheus-latest-orange?logo=prometheus)
+![Grafana](https://img.shields.io/badge/Grafana-latest-orange?logo=grafana)
+![Docker](https://img.shields.io/badge/Docker-29.4.0-blue?logo=docker)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4.0-orange?logo=scikit-learn)
+![MLflow](https://img.shields.io/badge/MLflow-2.10.2-blue?logo=mlflow)
+![GCP](https://img.shields.io/badge/GCP-Cloud_Run-blue?logo=googlecloud)
 
+---
+
+*IDS 568 MLOps — Module 8 Final Project | University of Illinois Chicago | April 2026*
